@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../pages/home_page.dart';
 import '../pages/profile_page.dart';
+import '../view_models/budget_view_model.dart';
 
 class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
@@ -24,10 +25,9 @@ class _HomeState extends State<Home> {
 
   int _currentPageIndex = 0;
 
-
   @override
   Widget build(BuildContext context) {
-    final themeService = Provider.of<ThemeService>(context, listen: false);
+    final themeService = Provider.of<ThemeService>(context);
     return Scaffold(
       appBar: AppBar(
         title: Center(child: const Text("Budget Tracker")),
@@ -39,17 +39,21 @@ class _HomeState extends State<Home> {
         ),
         actions: [
           IconButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: ((context) {
-                  return AddBudgetDialog(
-                    budgetToAdd: (budget) {},
-                  );
-                }
-                ));
-          }, 
-          icon: const Icon(Icons.attach_money)),
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AddBudgetDialog(
+                        budgetToAdd: (budget) {
+                          final budgetService = Provider.of<BudgetViewModel>(
+                              context,
+                              listen: false);
+                          budgetService.budget = budget;
+                        },
+                      );
+                    });
+              },
+              icon: const Icon(Icons.attach_money)),
         ],
       ),
       body: pages[_currentPageIndex],
@@ -61,7 +65,7 @@ class _HomeState extends State<Home> {
             _currentPageIndex = index;
           });
         },
-        ),
+      ),
     );
   }
 }
